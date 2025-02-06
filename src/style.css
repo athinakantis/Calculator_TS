@@ -35,6 +35,7 @@ main {
   justify-content: center;
   align-items: center;
   font-family: 'Minecraftia';
+  flex-direction: column-reverse;
 }
 
 span.emoji {
@@ -88,6 +89,7 @@ input {
   background-repeat: no-repeat;
   background-color: transparent;
   color: var(--outline);
+  filter: drop-shadow(7px 8px 0px #fba9f4);
 }
 
 .btns {
@@ -126,4 +128,24 @@ input {
   top: 41px;
   right: 52px;
   color: var(--outline);
+}
+
+#attribute {
+  position: absolute;
+  bottom: 1rem;
+  right: 1rem;
+  color: var(--outline);
+
+  & a {
+    position: relative;
+    top: 0;
+    text-underline-offset: 0px;
+    margin-left: 10px;
+    transition: all 200ms ease-in-out;
+  }
+
+  & a:hover {
+    top: -5px;
+    text-underline-offset: 4px;
+  }
 }
