@@ -1,5 +1,8 @@
 import './style.css';
-import { add, subtract, divide, multiply } from './calcClass';
+import { animateDown, animateUp } from './utils/animations';
+import { MouseEventWithTarget } from './types/types';
+import { Calc } from './types/types';
+import { Calculator } from './calcClass';
 
 document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
 <main>
@@ -7,158 +10,152 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
   <p id='calculation'></p>
   <input
   readonly
+  id='userInput'
   type='text'
   placeholder='Hello!'
 />
 <div class="btns">
   <div class="row-1 row">
 
-    <button data-num-id='1'>1</button>
-    <button data-num-id='2'>2</button>
-    <button data-num-id='3'>3</button>
-    <button data-num-id='/'>/</button>
+    <button data-num-type='num' data-num-id='1'>1</button>
+    <button data-num-type='num' data-num-id='2'>2</button>
+    <button data-num-type='num' data-num-id='3'>3</button>
+    <button data-num-type='calc' data-num-id='/'>/</button>
   </div>
   <div class="row-2 row">
-    <button data-num-id='4'>4</button>
-    <button data-num-id='5'>5</button>
-    <button data-num-id='6'>6</button>
-    <button data-num-id='-'>-</button>
+    <button data-num-type='num' data-num-id='4'>4</button>
+    <button data-num-type='num' data-num-id='5'>5</button>
+    <button data-num-type='num' data-num-id='6'>6</button>
+    <button data-num-type='calc' data-num-id='-'>-</button>
   </div>
   <div class="row-3 row">
-    <button data-num-id='7'>7</button>
-    <button data-num-id='8'>8</button>
-    <button data-num-id='9'>9</button>
-    <button data-num-id='+'>+</button>
+    <button data-num-type='num' data-num-id='7'>7</button>
+    <button data-num-type='num' data-num-id='8'>8</button>
+    <button data-num-type='num' data-num-id='9'>9</button>
+    <button data-num-type='calc' data-num-id='+'>+</button>
   </div>
   <div class="row-4 row">
-    <button data-num-id='0'>0</button>
-    <button data-num-id='.'>,</button>
-    <button data-num-id='='>=</button>
-    <button data-num-id='*'>x</button>
+    <button data-num-type='num' data-num-id='0'>0</button>
+    <button data-num-type='comma' data-num-id='.'>,</button>
+    <button data-num-type='calculate' data-num-id='='>=</button>
+    <button data-num-type='calc' data-num-id='*'>x</button>
   </div>
   </div>
   </div>
+  <footer>
+  <p id="attribute">
+  Coded and drawn by Athina Kantis
+  <a href="https://github.com/athinakantis">Github</a>
+  </p>
+  </footer>
   </main>
 `;
+document.addEventListener('DOMContentLoaded', init);
 
-type Calc = '+' | '-' | '*' | '/';
-let a: number, b: number, operation: Calc;
+function init() {
+  const input = document.querySelector('input');
+  const numBtns = document.querySelectorAll(`button[data-num-type='num']`);
+  const calcBtns = document.querySelectorAll(`button[data-num-type='calc']`);
+  const calcP = document.querySelector('#calculation')!;
 
-document.addEventListener('DOMContentLoaded', () => {
-    const input: HTMLInputElement = document.querySelector('input')!; // Exclamation mark at the end means 'This will definitely not be null'
-    const calcP: HTMLParagraphElement = document.querySelector('#calculation')!;
-    const calcBtns: NodeListOf<HTMLButtonElement> =
-        document.querySelectorAll('.btns button');
+  const calculator = new Calculator();
 
-    const handleMouseDown = (e) => {
-        animateDown(e);
-        const { numId } = e.target.dataset;
+  // Add event listeners for all numerical buttons [1-9]
+  calcBtns.forEach((btn) => {
+    btn.addEventListener('mousedown', (e) => {
+      animateDown(e as MouseEventWithTarget);
+      if (input!.value.length < 1) return;
+      calculator.a = +input!.value.split(calculator.operation!)[0];
+      const operation = btn.getAttribute('data-num-id');
+      calculator.operation = operation as Calc;
 
-        if (numId.match(/[*\-+/]/g)) {
-            if (input!.value.length < 1) return;
-            operation = numId;
-            a = +input!.value.split(numId)[0];
+      const match = input!.value.match(/[*\-+/]/g);
 
-            if (input!.value.match(/[*\-+/]/g)) {
-                return (input!.value = input!.value.replace(/[*\-+/]/g, numId));
-            }
-            return (input!.value += numId);
-        }
+      match
+        ? (input!.value = input!.value.replace(
+            match as unknown as string,
+            operation as string
+          ))
+        : (input!.value += operation);
+    });
+    btn.addEventListener('mouseup', (e) =>
+      animateUp(e as MouseEventWithTarget)
+    );
+  });
 
-        numId === '=' ? handleCalculate() : (input!.value += numId);
-    };
+  // Add event listeners for calculation
+  const calculateBtn = document.querySelector(
+    `button[data-num-type='calculate']`
+  )!;
+  calculateBtn.addEventListener('mousedown', async (e) => {
+      animateDown(e as MouseEventWithTarget);
+      const valueB = input!.value.split(calculator.operation!)[1];
+      if (!valueB) return;
+      calculator.b = +valueB;
 
-    const handleCalculate = () => {
-        console.log('calculating');
+      const result = calculator.calculate();
+      calcP.textContent = `${calculator.a} ${calculator.operation} ${calculator.b} =`;
+      input!.value = result!.toString();
+      calculator.a = result!;
+      calculator.b = null;
+      calculator.operation = null;
+  });
+  calculateBtn.addEventListener('mouseup', (e) =>
+    animateUp(e as MouseEventWithTarget)
+  );
 
-        b = +input!.value.split(operation)[1];
-
-        calcP!.textContent = `${a} ${operation} ${b} =`;
-        input!.value = calc(operation).toString();
-        console.log(calc(operation));
-    };
-
-    const calc = (operation: string): number => {
-        switch (operation) {
-            case '+':
-                return add(a, b);
-            case '-':
-                return subtract(a, b);
-            case '/':
-                return divide(a, b);
-            case '*':
-                return multiply(a, b);
-            default:
-                return 0;
-        }
-    };
-
-    // Attach event listeners to buttons
-    calcBtns.forEach((btn) => {
-        btn.addEventListener('mousedown', handleMouseDown);
-        btn.addEventListener('mouseup', animateUp);
+  numBtns.forEach((btn) => {
+    btn.addEventListener('mousedown', (e) => {
+      animateDown(e as MouseEventWithTarget);
     });
 
-    // Add event listeners to keyboard events
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Backspace') {
-            calcP!.textContent = '';
-            input!.value = input!.value.substring(0, input!.value.length - 1);
-            new Audio(`/audio/click2.mp3`).play();
-        }
+    btn.addEventListener('mouseup', (e) =>
+      animateUp(e as MouseEventWithTarget)
+    );
+  });
 
-        let button = document.querySelector(`button[data-num-id='${e.key}']`);
+  const comma = document.querySelector(`button[data-num-type='comma']`)!;
+  comma.addEventListener('mousedown', (e) => {
+    animateDown(e as MouseEventWithTarget);
+    if (input!.value.length < 1) return;
+    if (input!.value[input!.value.length - 1] === '.') return;
+    input!.value += '.';
+  });
+  comma.addEventListener('mouseup', (e) =>
+    animateUp(e as MouseEventWithTarget)
+  );
 
-        if (e.key === 'Enter') {
-            document
-                .querySelector(`button[data-num-id='=']`)
-                ?.dispatchEvent(new MouseEvent('mousedown'));
-        }
-
-        if (e.key === '.' || e.key === ',') {
-            if (input!.value.length - 1 === '.') return;
-        }
-
-        if (button) {
-            const mousedownEvent = new MouseEvent('mousedown', {
-                bubbles: true,
-                cancelable: true,
-                view: window,
-            });
-            button.dispatchEvent(mousedownEvent);
-        }
+  numBtns.forEach((btn) => {
+    btn.addEventListener('mousedown', (e) => {
+      animateDown(e as MouseEventWithTarget);
+      input!.value += btn.getAttribute('data-num-id');
     });
+  });
 
-    document.addEventListener('keyup', (e) => {
-        let button = document.querySelector(`button[data-num-id='${e.key}']`);
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Backspace') {
+      input!.value.length < 2 ? reset() : input!.value = input!.value.substring(0, input!.value.length - 1)
+      new Audio(`/audio/click2.mp3`).play();
+    }
 
-        if (e.key === 'Enter') {
-            button = document.querySelector(`button[data-num-id='=']`);
-        }
+    if (e.key === 'Enter') {
+      calculateBtn.dispatchEvent(new MouseEvent('mousedown'));
+    }
 
-        if (button) {
-            const mouseupEvent = new MouseEvent('mouseup', {
-                bubbles: true,
-                cancelable: true,
-                view: window,
-            });
-            button.dispatchEvent(mouseupEvent);
-        }
-    });
-});
+    const button = document.querySelector(`button[data-num-id="${e.key}"]`);
+    button?.dispatchEvent(new MouseEvent('mousedown'));
+  });
 
-// Animations + Audio cues
-interface MouseEventWithTarget extends MouseEvent {
-    target: HTMLButtonElement;
+  document.addEventListener('keyup', (e) => {
+    if (e.key === 'Enter')
+      calculateBtn.dispatchEvent(new MouseEvent('mouseup'));
+    const button = document.querySelector(`button[data-num-id='${e.key}']`);
+    button?.dispatchEvent(new MouseEvent('mouseup'));
+  });
+
+  const reset = () => {
+    calculator.reset();
+    input!.value = '';
+    calcP.textContent = '';
+  };
 }
-
-const animateDown = (e: MouseEventWithTarget): void => {
-    e.target.style.backgroundImage = 'url(/button_pressed.png)';
-    e.target.style.transform = 'translate(0px, 7px)';
-    new Audio(`/audio/click1.mp3`).play();
-};
-
-const animateUp = (e: MouseEventWithTarget) => {
-    e.target.style.backgroundImage = 'url(/button.png)';
-    e.target.style.transform = 'translate(0px, 0px)';
-};
