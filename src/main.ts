@@ -45,7 +45,7 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
   <footer>
   <p id="attribute">
   Coded and drawn by Athina Kantis
-  <a href="https://github.com/athinakantis">Github</a>
+  <a target='_blank' href="https://github.com/athinakantis">Github</a>
   </p>
   </footer>
   </main>
