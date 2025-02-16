@@ -16,7 +16,6 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
 />
 <div class="btns">
   <div class="row-1 row">
-
     <button data-num-type='num' data-num-id='1'>1</button>
     <button data-num-type='num' data-num-id='2'>2</button>
     <button data-num-type='num' data-num-id='3'>3</button>
@@ -83,7 +82,7 @@ function init() {
         );
     });
 
-    // Add event listeners for calculation
+    // Add event listeners for calc buttons [ / * - + ]
     const calculateBtn = document.querySelector(
         `button[data-num-type='calculate']`
     )!;
