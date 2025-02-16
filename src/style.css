@@ -28,6 +28,11 @@ main {
   flex-direction: column-reverse;
 }
 
+span.emoji {
+  font-family: 'Emoji';
+  color: var(--outline);
+}
+
 button,
 input {
   font-family: inherit;
@@ -51,7 +56,7 @@ input {
   top: 1.7rem;
   width: 225px;
   background-color: transparent;
-  font-family: 'Dogica';
+  font-family: 'Dogica', sans-serif;
   border: none;
   color: var(--outline);
   padding: 0 10px;
