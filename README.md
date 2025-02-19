@@ -22,5 +22,5 @@ If you wish to run the tests provided enter `npm test` into the terminal
 
 ## Links
 
-[Live Page on Netlify]([https://typescript-calculator-kantis.netlify.app/)  
+[Live Page on Netlify](https://typescript-calculator-kantis.netlify.app/)  
 [Add me on LinkedIn!](https://www.linkedin.com/in/athina-kantis/)
